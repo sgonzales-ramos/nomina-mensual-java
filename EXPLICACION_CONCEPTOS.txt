@@ -1,0 +1,55 @@
+Explicación de conceptos de Programación II
+Proyecto Nomina Mensual
+Estudiante: Sergio Yordani Gonzáles Ramos – Segundo semestre 2026
+
+1. Organización del proyecto
+- modelo/Empleado.java: clase abstracta con los datos comunes de todos los empleados.
+- modelo/EmpleadoFijo.java: clase hija para empleados con sueldo mensual.
+- modelo/EmpleadoPorHora.java: clase hija para empleados pagados por hora.
+- aplicacion/Main.java: contiene el método main, los menús, las validaciones y el reporte.
+
+2. Conceptos aplicados
+- Clase: Empleado, EmpleadoFijo, EmpleadoPorHora y Main.
+- Objeto/instancia: cada empleado creado con new EmpleadoFijo(...) o new EmpleadoPorHora(...).
+- Constructor: recibe los datos necesarios al crear un objeto.
+- Parámetro: una variable que aparece en la declaración de un método o constructor, por ejemplo nombre en el constructor de Empleado.
+- Argumento: el valor que se envía al constructor al llamarlo, por ejemplo el texto capturado por consola.
+- this: distingue el atributo del objeto respecto al parámetro, por ejemplo this.sueldoMensual = sueldoMensual.
+- Encapsulamiento: los atributos de las clases son private y se consultan mediante getters.
+- Abstracción: Empleado es abstracta y declara calcularPago() sin definir una fórmula general.
+- Herencia: EmpleadoFijo y EmpleadoPorHora usan extends Empleado.
+- super(...): las clases hijas lo usan para inicializar DPI y nombre en la clase padre.
+- Polimorfismo: ambos tipos se guardan en ArrayList<Empleado> y se llama calcularPago() sin decidir la fórmula con condiciones.
+- Sobrescritura: cada clase hija implementa calcularPago() con @Override.
+- Arreglo simple: String[] meses contiene los doce meses predefinidos.
+- Acceso al mes: meses[numeroMes - 1] convierte el número ingresado al índice del arreglo.
+- ArrayList: empleados almacena una cantidad variable de trabajadores.
+- add(): agrega un empleado a la colección.
+- size(): devuelve la cantidad de empleados registrados.
+- Recorrido: el for-each recorre empleados para imprimir cada registro y sumar sus pagos.
+- Método con parámetros: leerEnteroEnRango(String mensaje, int minimo, int maximo).
+- Método que devuelve un resultado: leerNombre() devuelve un String; calcularPago() devuelve un double.
+- Atributo: nombre en la clase Empleado; pertenece al objeto y se consulta mediante getNombre().
+- Variable local: totalNomina dentro de imprimirNomina(); solo existe dentro de ese método.
+- Validaciones: mes y menús dentro de sus rangos; DPI con 13 dígitos; nombre no vacío; montos numéricos, finitos y no negativos.
+
+3. Fórmulas
+- Empleado fijo: sueldo mensual + bonificación.
+- Empleado por hora: pago por hora × horas trabajadas.
+No se agregan descuentos ni horas extra.
+
+4. Prueba sugerida
+- Seleccionar mes 3: debe mostrar MARZO.
+- Registrar empleado fijo: DPI 1234567890101, Ana López, sueldo 4000, bonificación 300. Pago: Q 4300.00.
+- Registrar empleado por hora: DPI 9876543210101, Luis Pérez, pago por hora 25, horas 120. Pago: Q 3000.00.
+- Imprimir nómina: 2 trabajadores y total Q 7300.00.
+- Verificar también mes 1 (Enero), mes 12 (Diciembre), reporte vacío y entradas inválidas.
+
+5. Cómo ejecutar
+Compilar los archivos Java conservando las carpetas y paquetes. Desde la carpeta del proyecto, una forma de compilar y ejecutar es:
+
+javac -d out src/modelo/Empleado.java src/modelo/EmpleadoFijo.java src/modelo/EmpleadoPorHora.java src/aplicacion/Main.java
+java -cp out aplicacion.Main
+
+6. Entrega en GitHub
+Subir la carpeta del proyecto a un repositorio GitHub. Verificar que estén los cuatro archivos .java y este documento. Copiar el enlace del repositorio y pegarlo en la plataforma de la universidad.
