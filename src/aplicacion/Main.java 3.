@@ -1,0 +1,212 @@
+package aplicacion;
+
+import modelo.Empleado;
+import modelo.EmpleadoFijo;
+import modelo.EmpleadoPorHora;
+
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class Main {
+    private static final Scanner scanner = new Scanner(System.in);
+    private static final String[] meses = {
+        "Enero", "Febrero", "Marzo", "Abril",
+        "Mayo", "Junio", "Julio", "Agosto",
+        "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    };
+    private static final ArrayList<Empleado> empleados = new ArrayList<>();
+    private static int numeroMes;
+
+    public static void main(String[] args) {
+        numeroMes = leerEnteroEnRango("Ingrese el mes a trabajar (1-12): ", 1, 12);
+        int opcion;
+
+        do {
+            limpiarPantalla();
+            System.out.println("NÓMINA DEL MES: " + meses[numeroMes - 1].toUpperCase());
+            System.out.println();
+            System.out.println("1 - Ingreso de nómina");
+            System.out.println("2 - Impresión de nómina");
+            System.out.println("3 - Salir");
+            opcion = leerEnteroEnRango("Seleccione una opción: ", 1, 3);
+
+            switch (opcion) {
+                case 1:
+                    ingresoNomina();
+                    break;
+                case 2:
+                    imprimirNomina();
+                    break;
+                case 3:
+                    System.out.println("Gracias por utilizar el sistema de nómina. ¡Hasta pronto!");
+                    break;
+                default:
+                    System.out.println("Opción inválida.");
+            }
+        } while (opcion != 3);
+
+        scanner.close();
+    }
+
+    private static void ingresoNomina() {
+        int tipo;
+        do {
+            limpiarPantalla();
+            System.out.println("NÓMINA DEL MES: " + meses[numeroMes - 1].toUpperCase());
+            System.out.println("INGRESO DE EMPLEADO A NÓMINA");
+            System.out.println("Trabajadores actuales = " + empleados.size());
+            System.out.println();
+            System.out.println("1 - Empleado fijo");
+            System.out.println("2 - Empleado por hora");
+            tipo = leerEnteroEnRango("Seleccione el tipo de empleado: ", 1, 2);
+
+            if (tipo == 1) {
+                registrarEmpleadoFijo();
+            } else {
+                registrarEmpleadoPorHora();
+            }
+
+            System.out.println();
+            System.out.println("¿Desea ingresar otro empleado?");
+            System.out.println("1 - Sí, ingresar otro empleado");
+            System.out.println("2 - Volver al menú principal");
+            int continuar = leerEnteroEnRango("Seleccione una opción: ", 1, 2);
+            if (continuar == 2) {
+                break;
+            }
+        } while (true);
+    }
+
+    private static void registrarEmpleadoFijo() {
+        limpiarPantalla();
+        System.out.println("NÓMINA DEL MES: " + meses[numeroMes - 1].toUpperCase());
+        System.out.println("INGRESO DE EMPLEADO FIJO");
+
+        String dpi = leerDpi();
+        String nombre = leerNombre();
+        double sueldo = leerDoubleNoNegativo("Sueldo mensual (Q): ");
+        double bonificacion = leerDoubleNoNegativo("Bonificación de este mes (Q): ");
+
+        Empleado empleado = new EmpleadoFijo(dpi, nombre, sueldo, bonificacion);
+        empleados.add(empleado);
+        System.out.printf("Pago del mes = sueldo mensual + bonificación%n");
+        System.out.printf("Pago de %s = Q %.2f%n", empleado.getNombre(), empleado.calcularPago());
+        confirmarEmpleado();
+    }
+
+    private static void registrarEmpleadoPorHora() {
+        limpiarPantalla();
+        System.out.println("NÓMINA DEL MES: " + meses[numeroMes - 1].toUpperCase());
+        System.out.println("INGRESO DE EMPLEADO POR HORA");
+
+        String dpi = leerDpi();
+        String nombre = leerNombre();
+        double pagoPorHora = leerDoubleNoNegativo("Pago por hora (Q): ");
+        double horas = leerDoubleNoNegativo("Horas trabajadas este mes: ");
+
+        Empleado empleado = new EmpleadoPorHora(dpi, nombre, pagoPorHora, horas);
+        empleados.add(empleado);
+        System.out.printf("Pago del mes = pago por hora x horas trabajadas%n");
+        System.out.printf("Pago de %s = Q %.2f%n", empleado.getNombre(), empleado.calcularPago());
+        confirmarEmpleado();
+    }
+
+    private static void confirmarEmpleado() {
+        System.out.println();
+        System.out.println("Empleado agregado correctamente.");
+        System.out.println("Trabajadores actuales = " + empleados.size());
+    }
+
+    private static void imprimirNomina() {
+        limpiarPantalla();
+        System.out.println("NÓMINA DEL MES: " + meses[numeroMes - 1].toUpperCase());
+        System.out.println();
+
+        if (empleados.isEmpty()) {
+            System.out.println("No hay empleados registrados en la nómina de este mes");
+            System.out.println("Total de trabajadores: 0");
+            System.out.println("Total de nómina: Q 0.00");
+        } else {
+            System.out.printf("%-18s %-24s %-12s %12s%n", "DPI", "Nombre", "Tipo", "Pago (Q)");
+            System.out.println("--------------------------------------------------------------------------");
+            double totalNomina = 0.0;
+
+            // Polimorfismo: cada objeto calcula su pago según su clase concreta.
+            for (Empleado empleado : empleados) {
+                double pago = empleado.calcularPago();
+                totalNomina += pago;
+                System.out.printf("%-18s %-24s %-12s %12.2f%n",
+                        empleado.getDpi(), empleado.getNombre(), empleado.obtenerTipo(), pago);
+            }
+
+            System.out.println("--------------------------------------------------------------------------");
+            System.out.println("Total de trabajadores: " + empleados.size());
+            System.out.printf("Total de nómina: Q %.2f%n", totalNomina);
+        }
+
+        System.out.println();
+        System.out.print("Presione Enter para volver al menú principal...");
+        scanner.nextLine();
+    }
+
+    private static String leerDpi() {
+        while (true) {
+            System.out.print("DPI (13 dígitos): ");
+            String dpi = scanner.nextLine().trim();
+            if (dpi.matches("\\d{13}")) {
+                return dpi;
+            }
+            System.out.println("Error: el DPI debe contener exactamente 13 dígitos.");
+        }
+    }
+
+    private static String leerNombre() {
+        while (true) {
+            System.out.print("Nombre: ");
+            String nombre = scanner.nextLine().trim();
+            if (!nombre.isEmpty()) {
+                return nombre;
+            }
+            System.out.println("Error: el nombre no puede estar vacío.");
+        }
+    }
+
+    private static double leerDoubleNoNegativo(String mensaje) {
+        while (true) {
+            System.out.print(mensaje);
+            String entrada = scanner.nextLine().trim();
+            try {
+                double valor = Double.parseDouble(entrada.replace(',', '.'));
+                if (Double.isFinite(valor) && valor >= 0) {
+                    return valor;
+                }
+                System.out.println("Error: ingrese un número finito mayor o igual a 0.");
+            } catch (NumberFormatException e) {
+                System.out.println("Error: debe ingresar un valor numérico válido.");
+            }
+        }
+    }
+
+    private static int leerEnteroEnRango(String mensaje, int minimo, int maximo) {
+        while (true) {
+            System.out.print(mensaje);
+            String entrada = scanner.nextLine().trim();
+            try {
+                int valor = Integer.parseInt(entrada);
+                if (valor >= minimo && valor <= maximo) {
+                    return valor;
+                }
+                System.out.println("Error: seleccione un número entre " + minimo + " y " + maximo + ".");
+            } catch (NumberFormatException e) {
+                System.out.println("Error: ingrese un número entero válido.");
+            }
+        }
+    }
+
+    private static void limpiarPantalla() {
+        // Compatible con consolas de IDE que no permiten borrar la pantalla.
+        for (int i = 0; i < 8; i++) {
+            System.out.println();
+        }
+    }
+}
